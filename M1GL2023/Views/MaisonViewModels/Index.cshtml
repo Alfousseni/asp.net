@@ -1,0 +1,485 @@
+﻿@model PagedList.IPagedList<M1GL2023.Models.MaisonViewModel>
+@using PagedList.Mvc
+@using M1GL2023.Models
+
+@{
+    ViewBag.Title = "Liste des Maisons";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>@ResourceImmo.titreListeDesMaisons </h2>
+
+@using (Html.BeginForm())
+{
+    <div class="form-horizontal">
+        <h4>Maison</h4>
+        <hr />
+        <div class="row">
+            @*<div class="col-md-6">
+                <div class="form-group">
+                    <label for="NbreChambre">Chambre(s)</label>
+                    <input type="number" class="form-control" name="NbreChambre" />
+                </div>
+            </div>*@
+
+            <div class="col-md-6">
+                <div class="form-group">
+                    <div class="wave-group">
+                        <input type="number" name="NbreChambre" class="input" required="">
+                        <span class="bar"></span>
+                        <label class="label">
+                            <span class="label-char" style="--index: 0">C</span>
+                            <span class="label-char" style="--index: 1">h</span>
+                            <span class="label-char" style="--index: 2">a</span>
+                            <span class="label-char" style="--index: 3">m</span>
+                            <span class="label-char" style="--index: 4">b</span>
+                            <span class="label-char" style="--index: 5">r</span>
+                            <span class="label-char" style="--index: 5">e</span>
+                            <span class="label-char" style="--index: 5">(e)</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-md-6">
+                <div class="form-group">
+                    <div class="wave-group">
+                        <input type="number" required="" name="NbreSalleEau" class="input">
+                        <span class="bar"></span>
+                        <label class="label">
+                            <span class="label-char" style="--index: 0">D</span>
+                            <span class="label-char" style="--index: 1">o</span>
+                            <span class="label-char" style="--index: 2">u</span>
+                            <span class="label-char" style="--index: 3">c</span>
+                            <span class="label-char" style="--index: 4">h</span>
+                            <span class="label-char" style="--index: 5">e</span>
+                            <span class="label-char" style="--index: 5">(s)</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="container">
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal" onclick="clearTextBox()">@ResourceImmo.nouveau</button><br /><br />
+    <table class="table table-striped table-bordered">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Localisation</th>
+                <th scope="col">Chambre(s)</th>
+                <th scope="col">Cuisine(s)</th>
+                <th scope="col">Proprietaire</th>
+                <th scope="col">Douche(s)</th>
+                <th scope="col">Toilette(s)</th>
+                <th scope="col">Action</th>
+            </tr>
+        </thead>
+        <tbody class="tbody">
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.IdBien)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Localisation)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.NbreChambre)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.NbreCuisine)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Proprietaire.Nom)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.NbreSalleEau)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.NbreToilete)
+                    </td>
+                    <td>
+                        <a href="#" class="btn btn-primary" onclick="return getbyID(@Html.DisplayFor(modelItem => item.IdBien))">@ResourceImmo.editer</a>
+                        | <a href="#" class="btn btn-danger" onclick="Delete( @Html.DisplayFor(modelItem => item.IdBien))">@ResourceImmo.supprimer</a>
+                        | <a href="#" class="btn btn-primary" onclick="Delete(@Html.DisplayFor(modelItem => item.IdBien))">@ResourceImmo.voirDetail</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) / @Model.PageCount
+    @Html.PagedListPager(Model, page => Url.Action("Index", new { page, NbreChambre = ViewBag.NbreChambre, NbreSalleEau = ViewBag.NbreSalleEau }))
+</div>
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel"></h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-horizontal">
+                        <h4>Maison</h4>
+                        <hr />
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="id">ID</label>
+                                    <input type="text" class="form-control" id="id" disabled="disabled" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="NbreChambre">Chambre(s)</label>
+                                    <input type="number" class="form-control" id="NbreChambre" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="NbreCuisine">Cuisine(s)</label>
+                                    <input type="number" class="form-control" id="NbreCuisine" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="NbreSalleEau">Douche(s)</label>
+                                    <input type="number" class="form-control" id="NbreSalleEau" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="NbreToilete">Toilette(s)</label>
+                                    <input type="number" class="form-control" id="NbreToilete" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="SuperficiBien">Superficie</label>
+                                    <input type="number" class="form-control" id="SuperficiBien" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="Localisation">Localisation</label>
+                                    <input type="text" class="form-control" id="Localisation" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="Proprietaire">Proprietaire</label>
+                                    <select id="Proprietaire" name="ProprietaireId" class="form-control">
+                                        @foreach (var proprietaire in ViewBag.Proprietaires)
+                                        {
+                                            <option value="@proprietaire.Id">@proprietaire.Nom @proprietaire.Prenom </option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="Localisation">Description</label>
+                                    <textarea type="Description" class="form-control" id="Description"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btnAdd" onclick="return Add();">Add</button>
+                <button type="button" class="btn btn-primary" id="btnUpdate" style="display:none;" onclick="Update();">Update</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+@section script{
+    <script>
+        //$(document).ready(function () {
+        //    loadData();
+        //});
+
+        //// Load Data function
+        //function loadData() {
+        //    $.ajax({
+        //        url: "/Proprietaires/GetProprietaire",
+        //        type: "GET",
+        //        contentType: "application/json;charset=utf-8",
+        //        dataType: "json",
+        //        success: function (result) {
+        //            var html = '';
+        //            $.each(result, function (key, item) {
+        //                html += '<tr>';
+        //                html += '<td>' + item.Nom + '</td>';
+        //                html += '<td>' + item.Prenom + '</td>';
+        //                html += '<td>' + item.Email + '</td>';
+        //                html += '<td>' + item.Username + '</td>';
+        //                html += '<td>' + item.Password + '</td>';
+        //                html += '<td><a href="#" class="btn btn-primary" onclick="return getbyID(' + item.Id + ')">Edit</a> | <a href="#" class="btn btn-danger" onclick="Delete(' + item.Id + ')">Delete</a></td>';
+        //                html += '</tr>';
+        //            });
+        //            $('.tbody').html(html);
+        //        },
+        //        error: function (errormessage) {
+        //            alert(errormessage.responseText);
+        //        }
+        //    });
+        //}
+
+
+        // Load Data function
+        function loadData() {
+            $.ajax({
+                url: "/MaisonViewModels/Index",
+                type: "GET",
+                contentType: "application/json;charset=utf-8"
+            });
+        }
+
+        //Add Data Function
+        function Add() {
+            var res = validate();
+            if (res == false) {
+                return false;
+            }
+            var NbreChambre = parseInt($('#NbreChambre').val());
+            var NbreCuisine = parseInt($('#NbreCuisine').val());
+            var NbreSalleEau = parseInt($('#NbreSalleEau').val());
+            var NbreToilete = parseInt($('#NbreToilete').val());
+
+            if (isNaN(NbreChambre) || isNaN(NbreCuisine) || isNaN(NbreSalleEau) || isNaN(NbreToilete)) {
+                alert("Veuillez saisir des nombres entiers pour le nombre de chambres, cuisines, salles d'eau et toilettes.");
+            } else {
+                var proObj = {
+                    idBien: $('#id').val(),
+                    NbreChambre: NbreChambre,
+                    NbreCuisine: NbreCuisine,
+                    NbreSalleEau: NbreSalleEau,
+                    NbreToilete: NbreToilete,
+                    SuperficiBien: $('#SuperficiBien').val(),
+                    Localisation: $('#Localisation').val(),
+                    ProprietaireId: $('#Proprietaire').val(),
+                    Description: $('#Description').val(),
+                };
+                $.ajax({
+                    url: "/MaisonViewModels/Add",
+                    data: JSON.stringify(proObj),
+                    type: "POST",
+                    contentType: "application/json;charset=utf-8",
+                    dataType: "json",
+                    success: function (result) {
+                        window.location.reload();
+                        $('#myModal').modal('hide');
+                    },
+                    error: function (errormessage) {
+                        alert(errormessage.responseText);
+                    }
+                });
+            }
+
+
+
+        }
+
+        function validate() {
+            var isValid = true;
+            if ($('#NbreChambre').val().trim() == "") {
+                $('#NbreChambre').css('border-color', 'Red');
+                isValid = false;
+            }
+            else {
+                $('#NbreChambre').css('border-color', 'lightgrey');
+            }
+            if ($('#NbreCuisine').val().trim() == "") {
+                $('#NbreCuisine').css('border-color', 'Red');
+                isValid = false;
+            }
+            else {
+                $('#NbreCuisine').css('border-color', 'lightgrey');
+            }
+            if ($('#NbreSalleEau').val().trim() == "") {
+                $('#NbreSalleEau').css('border-color', 'Red');
+                isValid = false;
+            }
+            else {
+                $('#NbreSalleEau').css('border-color', 'lightgrey');
+            }
+            if ($('#NbreToilete').val().trim() == "") {
+                $('#NbreToilete').css('border-color', 'Red');
+                isValid = false;
+            }
+            else {
+                $('#NbreToilete').css('border-color', 'lightgrey');
+            }
+            if ($('#SuperficiBien').val().trim() == "") {
+                $('#SuperficiBien').css('border-color', 'Red');
+                isValid = false;
+            }
+            else {
+                $('#SuperficiBien').css('border-color', 'lightgrey');
+            }
+            if ($('#Localisation').val().trim() == "") {
+                $('#Localisation').css('border-color', 'Red');
+                isValid = false;
+            }
+            else {
+                $('#Localisation').css('border-color', 'lightgrey');
+            }
+            if ($('#Proprietaire').val().trim() == "") {
+                $('#Proprietaire').css('border-color', 'Red');
+                isValid = false;
+            }
+            else {
+                $('#Proprietaire').css('border-color', 'lightgrey');
+            }
+            if ($('#Description').val().trim() == "") {
+                $('#Description').css('border-color', 'Red');
+                isValid = false;
+            }
+            else {
+                $('#Description').css('border-color', 'lightgrey');
+            }
+
+            return isValid;
+        }
+
+        function clearTextBox() {
+            $('#id').val("");
+            $('#NbreChambre').val("");
+            $('#NbreCuisine').val("");
+            $('#NbreSalleEau').val("");
+            $('#NbreToilete').val("");
+            $('#SuperficiBien').val("");
+            $('#Localisation').val("");
+            $('#Proprietaire').val("");
+            $('#Description').val("");
+            $('#btnUpdate').hide();
+            $('#btnAdd').show();
+            $('#NbreChambre').css('border-color', 'lightgrey');
+            $('#NbreCuisine').css('border-color', 'lightgrey');
+            $('#NbreSalleEau').css('border-color', 'lightgrey');
+            $('#NbreToilete').css('border-color', 'lightgrey');
+            $('#SuperficiBien').css('border-color', 'lightgrey');
+            $('#Localisation').css('border-color', 'lightgrey');
+            $('#Proprietaire').css('border-color', 'lightgrey');
+            $('#Description').css('border-color', 'lightgrey');
+        }
+
+        //function for updating employee's record
+
+        function Update() {
+            var NbreChambre = parseInt($('#NbreChambre').val());
+            var NbreCuisine = parseInt($('#NbreCuisine').val());
+            var NbreSalleEau = parseInt($('#NbreSalleEau').val());
+            var NbreToilete = parseInt($('#NbreToilete').val());
+
+            if (isNaN(NbreChambre) || isNaN(NbreCuisine) || isNaN(NbreSalleEau) || isNaN(NbreToilete)) {
+                alert("Veuillez saisir des nombres entiers pour le nombre de chambres, cuisines, salles d'eau et toilettes.");
+            } else {
+                var proObj = {
+                    idBien: $('#id').val(),
+                    NbreChambre: NbreChambre,
+                    NbreCuisine: NbreCuisine,
+                    NbreSalleEau: NbreSalleEau,
+                    NbreToilete: NbreToilete,
+                    SuperficiBien: $('#SuperficiBien').val(),
+                    Localisation: $('#Localisation').val(),
+                    ProprietaireId: $('#Proprietaire').val(),
+                    Description: $('#Description').val(),
+                };
+                $.ajax({
+                    url: "/MaisonViewModels/Update",
+                    data: JSON.stringify(proObj),
+                    type: "POST",
+                    contentType: "application/json;charset=utf-8",
+                    dataType: "json",
+                    success: function (result) {
+                        window.location.reload();
+                        clearTextBox();
+                        $('#myModal').modal('hide');
+                    },
+                    error: function (errormessage) {
+                        alert(errormessage.responseText);
+                    }
+                });
+            }
+        }
+
+
+        //function for deleting employee's record
+        function Delete(ID) {
+            console.log(ID);
+            var ans = confirm("Are you sure you want to delete this Record?");
+            if (ans) {
+                $.ajax({
+                    url: "/MaisonViewModels/Delete/" + ID,
+                    type: "POST",
+                    contentType: "application/json;charset=UTF-8",
+                    dataType: "json",
+                    success: function (result) {
+                        window.location.reload();
+                    },
+                    error: function (errormessage) {
+                        alert(errormessage.responseText);
+                    }
+                });
+            }
+        }
+
+        //Function for getting the Data Based upon Employee ID
+        function getbyID(ProID) {
+            $('#NbreChambre').css('border-color', 'lightgrey');
+            $('#NbreCuisine').css('border-color', 'lightgrey');
+            $('#NbreSalleEau').css('border-color', 'lightgrey');
+            $('#NbreToilete').css('border-color', 'lightgrey');
+            $('#SuperficiBien').css('border-color', 'lightgrey');
+            $('#Localisation').css('border-color', 'lightgrey');
+            $('#Proprietaire').css('border-color', 'lightgrey');
+            $('#Description').css('border-color', 'lightgrey');
+            $.ajax({
+                url: "/MaisonViewModels/GetbyID/" + ProID,
+                typr: "GET",
+                contentType: "application/json;charset=UTF-8",
+                dataType: "json",
+                success: function (result) {
+                    $('#id').val(result.IdBien);
+                    $('#NbreChambre').val(result.NbreChambre);
+                    $('#NbreCuisine').val(result.NbreCuisine);
+                    $('#NbreSalleEau').val(result.NbreSalleEau);
+                    $('#NbreToilete').val(result.NbreToilete);
+                    $('#SuperficiBien').val(result.SuperficiBien);
+                    $('#Localisation').val(result.Localisation);
+                    $('#Proprietaire').val(result.Proprietaire);
+                    $('#Description').val(result.Description);
+
+                    $('#myModal').modal('show');
+                    $('#btnUpdate').show();
+                    $('#btnAdd').hide();
+                },
+                error: function (errormessage) {
+                    alert(errormessage.responseText + "llll");
+                }
+            });
+            return false;
+        }
+
+
+
+
+    </script>
+}

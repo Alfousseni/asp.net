@@ -1,0 +1,367 @@
+﻿@model PagedList.IPagedList<M1GL2023.Models.Proprietaire>
+@using PagedList.Mvc
+@using M1GL2023.Models
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>@ResourceImmo.titreListeDesProprietaires | <a href="@Url.Action("Imprimer")" target="_blank">Imprimer</a></h2>
+
+@using (Html.BeginForm())
+{
+
+    <div class="form-horizontal">
+        <h4>Proprietaire</h4>
+        <hr />
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="nom">Nom</label>
+                    <input name="Nom" type="text" class="form-control" />
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="prenom">Prenom</label>
+                    <input name="Prenom" type="text" class="form-control"  />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary" id="">Rechercher</button>
+            </div>
+        </div>
+        
+    </div>
+
+}
+
+<div class="container">
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal" onclick="clearTextBox()">@ResourceImmo.nouveau</button><br /><br />
+    <table class="table table-striped table-bordered">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">Nom</th>
+                <th scope="col">Prénom</th>
+                <th scope="col">Email</th>
+                <th scope="col">Nom d'utilisateur</th>
+                <th scope="col">Mot de passe</th>
+                <th scope="col">Action</th>
+            </tr>
+        </thead>
+        <tbody class="tbody">
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Nom)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Prenom)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Email)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Username)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Password)
+                    </td>
+                    <td>
+                        <a href="#" class="btn btn-primary" onclick="return getbyID(@Html.DisplayFor(modelItem => item.Id))">@ResourceImmo.editer</a> | <a href="#" class="btn btn-danger" onclick="Delete( @Html.DisplayFor(modelItem => item.Id))">@ResourceImmo.supprimer</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) / @Model.PageCount
+    @Html.PagedListPager(Model, page => Url.Action("Index", new {page , Nom = ViewBag.Nom , Prenom = ViewBag.Prenom}))
+</div>
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"> 
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel"></h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-horizontal">
+                        <h4>Proprietaire</h4>
+                        <hr />
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="nom">ID</label>
+                                    <input type="text" class="form-control" id="id" disabled="disabled" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="nom">Nom</label>
+                                    <input type="text" class="form-control" id="nom" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="prenom">Prenom</label>
+                                    <input type="text" class="form-control" id="prenom" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="email">Email</label>
+                                    <input type="text" class="form-control" id="email" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="username">UserName</label>
+                                    <input type="text" class="form-control" id="username" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="password">Password</label>
+                                    <input type="password" class="form-control" id="password" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btnAdd" onclick="return Add();">Add</button>
+                <button type="button" class="btn btn-primary" id="btnUpdate" style="display:none;" onclick="Update();">Update</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+@section script{
+    <script>
+        //$(document).ready(function () {
+        //    loadData();
+        //});
+
+        //// Load Data function
+        //function loadData() {
+        //    $.ajax({
+        //        url: "/Proprietaires/GetProprietaire",
+        //        type: "GET",
+        //        contentType: "application/json;charset=utf-8",
+        //        dataType: "json",
+        //        success: function (result) {
+        //            var html = '';
+        //            $.each(result, function (key, item) {
+        //                html += '<tr>';
+        //                html += '<td>' + item.Nom + '</td>';
+        //                html += '<td>' + item.Prenom + '</td>';
+        //                html += '<td>' + item.Email + '</td>';
+        //                html += '<td>' + item.Username + '</td>';
+        //                html += '<td>' + item.Password + '</td>';
+        //                html += '<td><a href="#" class="btn btn-primary" onclick="return getbyID(' + item.Id + ')">Edit</a> | <a href="#" class="btn btn-danger" onclick="Delete(' + item.Id + ')">Delete</a></td>';
+        //                html += '</tr>';
+        //            });
+        //            $('.tbody').html(html);
+        //        },
+        //        error: function (errormessage) {
+        //            alert(errormessage.responseText);
+        //        }
+        //    });
+        //}
+       
+
+        // Load Data function
+        function loadData() {
+            $.ajax({
+                url: "/Proprietaires/Index",
+                type: "GET",
+                contentType: "application/json;charset=utf-8"
+            });
+        }
+
+        //Add Data Function
+        function Add() {
+            var res = validate();
+            if (res == false) {
+                return false;
+            }
+            var proObj = {
+                id: $('#id').val(),
+                Nom: $('#nom').val(),
+                Prenom: $('#prenom').val(),
+                Email: $('#email').val(),
+                Username: $('#username').val(),
+                Password: $('#password').val()
+            };
+            $.ajax({
+                url: "/Proprietaires/Add",
+                data: JSON.stringify(proObj),
+                type: "POST",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    window.location.reload();
+                    $('#myModal').modal('hide');
+                },
+                error: function (errormessage) {
+                    alert(errormessage.responseText);
+                }
+            });
+        }
+
+        function validate() {
+            var isValid = true;
+            if ($('#nom').val().trim() == "") {
+                $('#nom').css('border-color', 'Red');
+                isValid = false;
+            }
+            else {
+                $('#nom').css('border-color', 'lightgrey');
+            }
+            if ($('#prenom').val().trim() == "") {
+                $('#prenom').css('border-color', 'Red');
+                isValid = false;
+            }
+            else {
+                $('#prenom').css('border-color', 'lightgrey');
+            }
+            if ($('#email').val().trim() == "") {
+                $('#email').css('border-color', 'Red');
+                isValid = false;
+            }
+            else {
+                $('#email').css('border-color', 'lightgrey');
+            }
+            if ($('#username').val().trim() == "") {
+                $('#username').css('border-color', 'Red');
+                isValid = false;
+            }
+            else {
+                $('#username').css('border-color', 'lightgrey');
+            }
+            if ($('#password').val().trim() == "") {
+                $('#password').css('border-color', 'Red');
+                isValid = false;
+            }
+            else {
+                $('#password').css('border-color', 'lightgrey');
+            }
+            return isValid;
+        }
+
+        function clearTextBox() {
+            $('#EmployeeID').val("");
+            $('#nom').val("");
+            $('#prenom').val("");
+            $('#email').val("");
+            $('#username').val("");
+            $('#password').val("");
+            $('#btnUpdate').hide();
+            $('#btnAdd').show();
+            $('#nom').css('border-color', 'lightgrey');
+            $('#prenom').css('border-color', 'lightgrey');
+            $('#email').css('border-color', 'lightgrey');
+            $('#username').css('border-color', 'lightgrey');
+            $('#password').css('border-color', 'lightgrey');
+        }
+
+        //function for updating employee's record
+        function Update() {
+            var res = validate();
+            if (res == false) {
+                return false;
+            }
+            var proObj = {
+                Id: $('#id').val(),
+                Nom: $('#nom').val(),
+                Prenom: $('#prenom').val(),
+                Email: $('#email').val(),
+                Username: $('#username').val(),
+                Password: $('#password').val()
+            };
+            $.ajax({
+                url: "/Proprietaires/Update",
+                data: JSON.stringify(proObj),
+                type: "POST",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    window.location.reload();
+                    $('#myModal').modal('hide');
+                    $('#id').val("");
+                    $('#nom').val("");
+                    $('#prenom').val("");
+                    $('#email').val("");
+                    $('#username').val("");
+                    $('#password').val("");
+                },
+                error: function (errormessage) {
+                    alert(errormessage.responseText);
+                }
+            });
+        }
+
+        //function for deleting employee's record
+        function Delete(ID) {
+            var ans = confirm("Are you sure you want to delete this Record?");
+            if (ans) {
+                $.ajax({
+                    url: "/Proprietaires/Delete/" + ID,
+                    type: "POST",
+                    contentType: "application/json;charset=UTF-8",
+                    dataType: "json",
+                    success: function (result) {
+                        window.location.reload();
+                    },
+                    error: function (errormessage) {
+                        alert(errormessage.responseText);
+                    }
+                });
+            }
+        }
+
+        //Function for getting the Data Based upon Employee ID
+        function getbyID(ProID) {
+            $('#nom').css('border-color', 'lightgrey');
+            $('#prenom').css('border-color', 'lightgrey');
+            $('#email').css('border-color', 'lightgrey');
+            $('#username').css('border-color', 'lightgrey');
+            $('#password').css('border-color', 'lightgrey');
+            $.ajax({
+                url: "/Proprietaires/getbyID/" + ProID,
+                typr: "GET",
+                contentType: "application/json;charset=UTF-8",
+                dataType: "json",
+                success: function (result) {
+                    $('#id').val(result.Id);
+                    $('#nom').val(result.Nom);
+                    $('#prenom').val(result.Prenom);
+                    $('#email').val(result.Email);
+                    $('#username').val(result.Username);
+                    $('#password').val(result.Password);
+                    $('#myModal').modal('show');
+                    $('#btnUpdate').show();
+                    $('#btnAdd').hide();
+                },
+                error: function (errormessage) {
+                    alert(errormessage.responseText);
+                }
+            });
+            return false;
+        }
+
+
+
+
+    </script>
+}
+

@@ -1,0 +1,60 @@
+﻿@model IEnumerable<M1GL2023.Models.StudioViewModel>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <!--<th>-->
+            @*@Html.DisplayNameFor(model => model.Proprietaire.Nom)*@
+        <!--</th>-->
+        <th>
+            @Html.DisplayNameFor(model => model.Description)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.SuperficiBien)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Localisation)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Meuble)
+        </th>
+        <th>
+            Action
+        </th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        @*<td>
+            @Html.DisplayFor(modelItem => item.Proprietaire.Nom)
+        </td>*@
+        <td>
+            @Html.DisplayFor(modelItem => item.Description)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.SuperficiBien)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Localisation)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Meuble)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.IdBien }) |
+            @Html.ActionLink("Details", "Details", new { id=item.IdBien }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.IdBien })
+        </td>
+    </tr>
+}
+
+</table>
